@@ -36,8 +36,9 @@ const SEU16Char* get_document_line_text(intptr_t document_handle, size_t line);
 
 // ===================== Editor API =====================
 
-intptr_t create_editor(float touch_slop, int64_t double_tap_timeout,
-                       se_text_measurer_t measurer);
+intptr_t create_editor(se_text_measurer_t measurer,
+                       const uint8_t* options_data,
+                       size_t options_size);
 void free_editor(intptr_t editor_handle);
 
 void set_editor_viewport(intptr_t editor_handle, int16_t width, int16_t height);

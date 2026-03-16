@@ -709,17 +709,29 @@ class SweetEditorCore {
             ?? CTFontCreateWithName(fontName as CFString, fontSize, nil)
         inlayHintFont = CTFontCreateWithName(baseInlayHintFontName as CFString, baseInlayHintFontSize, nil)
 
+        let optionsPayload = SweetEditorCore.makeEditorOptionsPayload(
+            touchSlop: 10.0,
+            doubleTapTimeout: 300,
+            longPressMs: 500,
+            maxUndoStackSize: 512
+        )
+
         handle = performCoreCall {
-            create_editor(
-                10.0,   // touch_slop
-                300,    // double_tap_timeout
-                se_text_measurer_t(
-                    measure_text_width: SweetEditorCore.measureTextWidthCallback,
-                    measure_inlay_hint_width: SweetEditorCore.measureInlayHintWidthCallback,
-                    measure_icon_width: SweetEditorCore.measureIconWidthCallback,
-                    get_font_metrics: SweetEditorCore.getFontMetricsCallback
+            var editorHandle: Int = 0
+            optionsPayload.withUnsafeBytes { raw in
+                let ptr = raw.bindMemory(to: UInt8.self).baseAddress
+                editorHandle = create_editor(
+                    se_text_measurer_t(
+                        measure_text_width: SweetEditorCore.measureTextWidthCallback,
+                        measure_inlay_hint_width: SweetEditorCore.measureInlayHintWidthCallback,
+                        measure_icon_width: SweetEditorCore.measureIconWidthCallback,
+                        get_font_metrics: SweetEditorCore.getFontMetricsCallback
+                    ),
+                    ptr,
+                    optionsPayload.count
                 )
-            )
+            }
+            return editorHandle
         }
     }
 
@@ -750,9 +762,38 @@ class SweetEditorCore {
         withUnsafeBytes(of: &le) { data.append(contentsOf: $0) }
     }
 
+    private static func appendF32(_ value: Float, to data: inout Data) {
+        var le = value.bitPattern.littleEndian
+        withUnsafeBytes(of: &le) { data.append(contentsOf: $0) }
+    }
+
     private func appendI32(_ value: Int32, to data: inout Data) {
         var le = value.littleEndian
         withUnsafeBytes(of: &le) { data.append(contentsOf: $0) }
+    }
+
+    private static func appendI64(_ value: Int64, to data: inout Data) {
+        var le = value.littleEndian
+        withUnsafeBytes(of: &le) { data.append(contentsOf: $0) }
+    }
+
+    private static func appendU64(_ value: UInt64, to data: inout Data) {
+        var le = value.littleEndian
+        withUnsafeBytes(of: &le) { data.append(contentsOf: $0) }
+    }
+
+    private static func makeEditorOptionsPayload(
+        touchSlop: Float,
+        doubleTapTimeout: Int64,
+        longPressMs: Int64,
+        maxUndoStackSize: UInt64
+    ) -> Data {
+        var data = Data()
+        appendF32(touchSlop, to: &data)
+        appendI64(doubleTapTimeout, to: &data)
+        appendI64(longPressMs, to: &data)
+        appendU64(maxUndoStackSize, to: &data)
+        return data
     }
 
     private func withPayload(_ payload: Data, _ block: (UnsafePointer<UInt8>?, Int) -> Void) {
