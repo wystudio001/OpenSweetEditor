@@ -103,6 +103,10 @@ Core integration requirements are measurement callbacks, input-event forwarding,
 <table width="100%">
   <tr>
     <td width="33%" valign="top" align="center">
+      <strong>Discord</strong><br><br>
+      <a href="https://discord.gg/q5u4tGMgKQ" target="_blank">Join Discord：https://discord.gg/q5u4tGMgKQ</a>
+    </td>
+    <td width="33%" valign="top" align="center">
       <strong>QQ</strong><br><br>
       <img src="docs/imgs/qrcode_qq_group.jpg" alt="QQ Group QR Code" width="150"/>
       <p>QQ：1090609035</p>
@@ -110,10 +114,6 @@ Core integration requirements are measurement callbacks, input-event forwarding,
     <td width="33%" valign="top" align="center">
       <strong>WeChat</strong><br><br>
       <img src="docs/imgs/qrcode_wechat.png" alt="WeChat Group QR Code" width="200"/>
-    </td>
-    <td width="33%" valign="top" align="center">
-      <strong>Discord</strong><br><br>
-      <a href="https://discord.gg/q5u4tGMgKQ" target="_blank">Join Discord：https://discord.gg/q5u4tGMgKQ</a>
     </td>
   </tr>
 </table>
