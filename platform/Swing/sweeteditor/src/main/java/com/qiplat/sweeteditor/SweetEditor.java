@@ -730,8 +730,8 @@ public class SweetEditor extends JPanel implements EditorCore.TextMeasureCallbac
             return;
         }
 
-        Color trackColor = withAlpha(currentTheme.splitLineColor, 72);
-        Color thumbColor = withAlpha(currentTheme.lineNumberColor, 170);
+        Color trackColor = argbToColor(currentTheme.scrollbarTrackColor);
+        Color thumbColor = argbToColor(currentTheme.scrollbarThumbColor);
 
         float verticalTrackX = 0f;
         float verticalTrackWidth = 0f;

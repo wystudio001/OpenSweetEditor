@@ -77,6 +77,10 @@ namespace SweetEditor {
 
 		/// <summary>Line number area split line color (ARGB).</summary>
 		public Color SplitLineColor { get; set; }
+		/// <summary>Scrollbar track color (ARGB).</summary>
+		public Color ScrollbarTrackColor { get; set; } = Color.FromArgb(unchecked((int)0x48FFFFFF));
+		/// <summary>Scrollbar thumb color (ARGB).</summary>
+		public Color ScrollbarThumbColor { get; set; } = Color.FromArgb(unchecked((int)0xAA858585));
 
 		/// <summary>IME composition underline color (ARGB).</summary>
 		public Color CompositionColor { get; set; }
@@ -148,6 +152,8 @@ namespace SweetEditor {
 			GuideColor = Color.FromArgb(unchecked((int)0x33FFFFFF)),
 			SeparatorColor = Color.FromArgb(unchecked((int)0xFF6A9955)),
 			SplitLineColor = Color.FromArgb(unchecked((int)0x33FFFFFF)),
+			ScrollbarTrackColor = Color.FromArgb(unchecked((int)0x48FFFFFF)),
+			ScrollbarThumbColor = Color.FromArgb(unchecked((int)0xAA858585)),
 			CompositionColor = Color.FromArgb(unchecked((int)0xFFFFCC00)),
 			InlayHintBgColor = Color.FromArgb(unchecked((int)0x20FFFFFF)),
 			InlayHintTextColor = Color.FromArgb(unchecked((int)0xFFA0A0A0)),
@@ -188,6 +194,8 @@ namespace SweetEditor {
 			GuideColor = Color.FromArgb(unchecked((int)0x33000000)),
 			SeparatorColor = Color.FromArgb(unchecked((int)0xFF008000)),
 			SplitLineColor = Color.FromArgb(unchecked((int)0x33000000)),
+			ScrollbarTrackColor = Color.FromArgb(unchecked((int)0x48000000)),
+			ScrollbarThumbColor = Color.FromArgb(unchecked((int)0xAA237893)),
 			CompositionColor = Color.FromArgb(unchecked((int)0xFF0066FF)),
 			InlayHintBgColor = Color.FromArgb(unchecked((int)0x20000000)),
 			InlayHintTextColor = Color.FromArgb(unchecked((int)0xFF808080)),
@@ -1467,8 +1475,8 @@ namespace SweetEditor {
 			bool hasHorizontal = horizontal.Visible && horizontal.Track.Width > 0 && horizontal.Track.Height > 0;
 			if (!hasVertical && !hasHorizontal) return;
 
-			using var trackBrush = new SolidBrush(WithAlpha(currentTheme.SplitLineColor, 72));
-			using var thumbBrush = new SolidBrush(WithAlpha(currentTheme.LineNumberColor, 170));
+			using var trackBrush = new SolidBrush(currentTheme.ScrollbarTrackColor);
+			using var thumbBrush = new SolidBrush(currentTheme.ScrollbarThumbColor);
 			RectangleF verticalTrackRect = RectangleF.Empty;
 			RectangleF horizontalTrackRect = RectangleF.Empty;
 
@@ -1510,10 +1518,6 @@ namespace SweetEditor {
 					horizontalTrackRect.Height);
 				g.FillRectangle(trackBrush, corner);
 			}
-		}
-
-		private static Color WithAlpha(Color color, int alpha) {
-			return Color.FromArgb(Math.Max(0, Math.Min(255, alpha)), color.R, color.G, color.B);
 		}
 
 		private void DrawLineNumber(Graphics g, VisualLine visualLine, EditorRenderModel model) {

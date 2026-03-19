@@ -2276,10 +2276,8 @@ public class SweetEditor extends View {
         float horizontalTrackHeight = 0f;
 
         if (hasVertical) {
-            int trackAlpha = Math.round(72f * verticalAlpha);
-            int thumbAlpha = Math.round(170f * verticalAlpha);
-            mScrollbarTrackPaint.setColor(withAlpha(mTheme.splitLineColor, trackAlpha));
-            mScrollbarThumbPaint.setColor(withAlpha(mTheme.lineNumberColor, thumbAlpha));
+            mScrollbarTrackPaint.setColor(multiplyAlpha(mTheme.scrollbarTrackColor, verticalAlpha));
+            mScrollbarThumbPaint.setColor(multiplyAlpha(mTheme.scrollbarThumbColor, verticalAlpha));
             float trackX = vertical.track.origin != null ? vertical.track.origin.x : 0f;
             float trackY = vertical.track.origin != null ? vertical.track.origin.y : 0f;
             float thumbX = vertical.thumb.origin != null ? vertical.thumb.origin.x : 0f;
@@ -2291,10 +2289,8 @@ public class SweetEditor extends View {
         }
 
         if (hasHorizontal) {
-            int trackAlpha = Math.round(72f * horizontalAlpha);
-            int thumbAlpha = Math.round(170f * horizontalAlpha);
-            mScrollbarTrackPaint.setColor(withAlpha(mTheme.splitLineColor, trackAlpha));
-            mScrollbarThumbPaint.setColor(withAlpha(mTheme.lineNumberColor, thumbAlpha));
+            mScrollbarTrackPaint.setColor(multiplyAlpha(mTheme.scrollbarTrackColor, horizontalAlpha));
+            mScrollbarThumbPaint.setColor(multiplyAlpha(mTheme.scrollbarThumbColor, horizontalAlpha));
             float trackX = horizontal.track.origin != null ? horizontal.track.origin.x : 0f;
             float trackY = horizontal.track.origin != null ? horizontal.track.origin.y : 0f;
             float thumbX = horizontal.thumb.origin != null ? horizontal.thumb.origin.x : 0f;
@@ -2306,8 +2302,7 @@ public class SweetEditor extends View {
         }
 
         if (hasVertical && hasHorizontal) {
-            int cornerAlpha = Math.round(72f * Math.max(verticalAlpha, horizontalAlpha));
-            mScrollbarTrackPaint.setColor(withAlpha(mTheme.splitLineColor, cornerAlpha));
+            mScrollbarTrackPaint.setColor(multiplyAlpha(mTheme.scrollbarTrackColor, Math.max(verticalAlpha, horizontalAlpha)));
             canvas.drawRect(
                     verticalTrackX,
                     horizontalTrackY,
@@ -2346,9 +2341,11 @@ public class SweetEditor extends View {
         return Math.max(0f, Math.min(1f, value));
     }
 
-    private static int withAlpha(int argb, int alpha) {
-        int a = Math.max(0, Math.min(255, alpha));
-        return (a << 24) | (argb & 0x00FFFFFF);
+    private static int multiplyAlpha(int argb, float alphaMultiplier) {
+        float m = clamp01(alphaMultiplier);
+        int baseAlpha = (argb >>> 24) & 0xFF;
+        int outAlpha = Math.round(baseAlpha * m);
+        return (outAlpha << 24) | (argb & 0x00FFFFFF);
     }
 
     private void scheduleTransientScrollbarRefresh(int requestedDelayMs) {
