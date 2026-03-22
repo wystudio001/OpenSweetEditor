@@ -221,22 +221,21 @@ EDITOR_API void editor_set_show_split_line(intptr_t editor_handle, int show);
 ///             - i32 severity
 ///             - i32 color
 ///         24. i32 max_gutter_icons
-///         25. f32 fold_arrow_x
-///         26. i32 linked_editing_rect_count
-///         27. LinkedEditingRect[linked_editing_rect_count] linked_editing_rects
+///         25. i32 linked_editing_rect_count
+///         26. LinkedEditingRect[linked_editing_rect_count] linked_editing_rects
 ///             LinkedEditingRect layout:
 ///             - PointF origin
 ///             - f32 width
 ///             - f32 height
 ///             - i32 is_active
-///         28. i32 bracket_highlight_rect_count
-///         29. BracketHighlightRect[bracket_highlight_rect_count] bracket_highlight_rects
+///         27. i32 bracket_highlight_rect_count
+///         28. BracketHighlightRect[bracket_highlight_rect_count] bracket_highlight_rects
 ///             BracketHighlightRect layout:
 ///             - PointF origin
 ///             - f32 width
 ///             - f32 height
-///         30. (optional append-only tail) ScrollbarModel vertical_scrollbar
-///         31. (optional append-only tail) ScrollbarModel horizontal_scrollbar
+///         29. (optional append-only tail) ScrollbarModel vertical_scrollbar
+///         30. (optional append-only tail) ScrollbarModel horizontal_scrollbar
 ///             ScrollbarModel layout:
 ///             - i32 visible
 ///             - f32 alpha (0~1)

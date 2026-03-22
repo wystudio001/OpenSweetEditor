@@ -897,13 +897,11 @@ namespace SweetEditor {
 			model.DiagnosticDecorations = diagnosticDecorations;
 
 			if (!TryReadInt32(data, ref offset, out int maxGutterIcons) ||
-				!TryReadFloat(data, ref offset, out float foldArrowX) ||
 				!TryReadInt32(data, ref offset, out int linkedRectCount) ||
 				linkedRectCount < 0) {
 				return model;
 			}
 			model.MaxGutterIcons = maxGutterIcons;
-			model.FoldArrowX = foldArrowX;
 
 			List<LinkedEditingRect> linkedEditingRects = new(linkedRectCount);
 			for (int i = 0; i < linkedRectCount; i++) {

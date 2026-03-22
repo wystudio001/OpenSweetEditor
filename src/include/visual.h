@@ -295,8 +295,6 @@ namespace NS_SWEETEDITOR {
     Vector<DiagnosticDecoration> diagnostic_decorations;
     /// Maximum gutter icon count (0=overlay mode, icon overlays line number; >0=exclusive mode with reserved fixed space)
     uint32_t max_gutter_icons {0};
-    /// Fold-arrow drawing center x (valid when shouldShowFoldArrows() is true; platform draws arrow at this x)
-    float fold_arrow_x {0};
     /// Linked-editing highlight rectangle list (Tab Stop placeholders)
     Vector<LinkedEditingRect> linked_editing_rects;
     /// Bracket-pair highlight rectangle list (bracket near cursor + matching bracket, usually 0 or 2)
@@ -455,7 +453,7 @@ namespace NS_SWEETEDITOR {
   NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FoldMarkerRenderItem, logical_line, fold_state, origin, width, height)
   NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ScrollbarRect, origin, width, height)
   NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ScrollbarModel, visible, alpha, track, thumb)
-  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(EditorRenderModel, split_x, split_line_visible, scroll_x, scroll_y, viewport_width, viewport_height, current_line, lines, cursor, selection_rects, selection_start_handle, selection_end_handle, composition_decoration, guide_segments, diagnostic_decorations, max_gutter_icons, fold_arrow_x, linked_editing_rects, bracket_highlight_rects, gutter_icons, fold_markers, vertical_scrollbar, horizontal_scrollbar)
+  NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(EditorRenderModel, split_x, split_line_visible, scroll_x, scroll_y, viewport_width, viewport_height, current_line, lines, cursor, selection_rects, selection_start_handle, selection_end_handle, composition_decoration, guide_segments, diagnostic_decorations, max_gutter_icons, linked_editing_rects, bracket_highlight_rects, gutter_icons, fold_markers, vertical_scrollbar, horizontal_scrollbar)
   NLOHMANN_JSON_SERIALIZE_ENUM(FoldArrowMode, {
     {FoldArrowMode::AUTO, "AUTO"},
     {FoldArrowMode::ALWAYS, "ALWAYS"},

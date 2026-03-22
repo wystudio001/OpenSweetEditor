@@ -75,8 +75,10 @@ public class MainActivity extends AppCompatActivity {
         mEditor.addCompletionProvider(mDemoCompletionProvider);
 
         mEditor.setEditorIconProvider(iconId -> {
-            if (iconId == DemoDecorationProvider.ICON_CLASS) {
-                return ContextCompat.getDrawable(this, R.mipmap.ic_gutter_icon1);
+            if (iconId == DemoDecorationProvider.ICON_TYPE) {
+                return ContextCompat.getDrawable(this, R.mipmap.ic_gutter_down);
+            } else if (iconId == DemoDecorationProvider.ICON_AT) {
+                return ContextCompat.getDrawable(this, R.mipmap.ic_gutter_at);
             }
             return null;
         });

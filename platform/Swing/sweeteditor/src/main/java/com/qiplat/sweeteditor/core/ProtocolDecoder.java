@@ -38,7 +38,6 @@ final class ProtocolDecoder {
         model.guideSegments = readGuideSegments(data);
         model.diagnosticDecorations = readDiagnosticDecorations(data);
         model.maxGutterIcons = data.getInt();
-        model.foldArrowX = data.getFloat();
         model.linkedEditingRects = readLinkedEditingRects(data);
         model.bracketHighlightRects = readBracketHighlightRects(data);
         model.verticalScrollbar = defaultScrollbarModel();

@@ -71,7 +71,8 @@ public class DemoDecorationProvider implements DecorationProvider {
     private static final int STYLE_ANNOTATION = EditorTheme.STYLE_ANNOTATION;
     private static final int STYLE_COLOR = EditorTheme.STYLE_PREPROCESSOR + 1;
 
-    public static final int ICON_CLASS = 1;
+    public static final int ICON_TYPE = 1;
+    public static final int ICON_AT = 2;
 
     private final SweetEditor editor;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -388,21 +389,30 @@ public class DemoDecorationProvider implements DecorationProvider {
 
     private void appendGutterIcons(@NonNull SparseArray<List<GutterIcon>> gutterIcons,
                                    @NonNull Document editorDocument, TokenSpan token) {
-        if (token.styleId != STYLE_KEYWORD) {
+        if (token.styleId != STYLE_KEYWORD && token.styleId != STYLE_ANNOTATION) {
             return;
         }
         TokenRangeInfo range = extractSingleLineTokenRange(token);
         if (range == null) {
             return;
         }
-        String literal = getTokenLiteral(editorDocument, range);
-        if ("class".equals(literal) || "struct".equals(literal)) {
+        if (token.styleId == STYLE_KEYWORD) {
+            String literal = getTokenLiteral(editorDocument, range);
+            if ("class".equals(literal) || "struct".equals(literal)) {
+                List<GutterIcon> lineIcons = gutterIcons.get(range.line);
+                if (lineIcons == null) {
+                    lineIcons = new ArrayList<>();
+                    gutterIcons.put(range.line, lineIcons);
+                }
+                lineIcons.add(new GutterIcon(ICON_TYPE));
+            }
+        } else {
             List<GutterIcon> lineIcons = gutterIcons.get(range.line);
             if (lineIcons == null) {
                 lineIcons = new ArrayList<>();
                 gutterIcons.put(range.line, lineIcons);
             }
-            lineIcons.add(new GutterIcon(ICON_CLASS));
+            lineIcons.add(new GutterIcon(ICON_AT));
         }
     }
 

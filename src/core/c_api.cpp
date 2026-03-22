@@ -298,7 +298,6 @@ static const uint8_t* editorRenderModelToBinary(const EditorRenderModel& model, 
   }
 
   appendI32(buffer, static_cast<int32_t>(model.max_gutter_icons));
-  appendF32(buffer, model.fold_arrow_x);
 
   appendI32(buffer, static_cast<int32_t>(model.linked_editing_rects.size()));
   for (const auto& rect : model.linked_editing_rects) {

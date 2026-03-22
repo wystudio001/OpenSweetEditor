@@ -1101,9 +1101,6 @@ namespace SweetEditor {
 		/// <summary>Maximum number of gutter icons shown in the line-number gutter (0 = overlay mode).</summary>
 		[JsonPropertyName("max_gutter_icons")]
 		public int MaxGutterIcons { get; set; }
-		/// <summary>Fold-arrow center X for rendering (0 = disabled).</summary>
-		[JsonPropertyName("fold_arrow_x")]
-		public float FoldArrowX { get; set; }
 		/// <summary>Linked-edit highlight rectangles (tab stop placeholders).</summary>
 		[JsonPropertyName("linked_editing_rects")]
 		public List<LinkedEditingRect> LinkedEditingRects { get; set; }

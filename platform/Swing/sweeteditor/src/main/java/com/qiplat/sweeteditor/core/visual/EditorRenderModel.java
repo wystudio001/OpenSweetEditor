@@ -22,7 +22,6 @@ public class EditorRenderModel {
     @SerializedName("guide_segments") public List<GuideSegment> guideSegments;
     @SerializedName("diagnostic_decorations") public List<DiagnosticDecoration> diagnosticDecorations;
     @SerializedName("max_gutter_icons") public int maxGutterIcons;
-    @SerializedName("fold_arrow_x") public float foldArrowX;
     @SerializedName("linked_editing_rects") public java.util.List<LinkedEditingRect> linkedEditingRects;
     @SerializedName("bracket_highlight_rects") public java.util.List<BracketHighlightRect> bracketHighlightRects;
     @SerializedName("vertical_scrollbar") public ScrollbarModel verticalScrollbar;

@@ -80,10 +80,6 @@ public class EditorRenderModel {
     @SerializedName("diagnostic_decorations")
     public List<DiagnosticDecoration> diagnosticDecorations;
 
-    /** Fold arrow drawing center X coordinate (0=disabled). */
-    @SerializedName("fold_arrow_x")
-    public float foldArrowX;
-
     /** Linked editing highlight rectangle list (Tab Stop placeholders). */
     @SerializedName("linked_editing_rects")
     public List<LinkedEditingRect> linkedEditingRects;
