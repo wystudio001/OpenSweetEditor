@@ -1155,18 +1155,15 @@ int editor_get_auto_indent_mode(intptr_t editor_handle) {
 #pragma region Handle Config
 
 void editor_set_handle_config(intptr_t editor_handle,
-    float radius, float center_dist, float line_width,
-    float touch_padding, float drag_y_offset) {
+    float start_left, float start_top, float start_right, float start_bottom,
+    float end_left, float end_top, float end_right, float end_bottom) {
   Ptr<EditorCore> editor_core = getCPtrHolderValue<EditorCore>(editor_handle);
   if (editor_core == nullptr) {
     return;
   }
   HandleConfig config;
-  config.radius = radius;
-  config.center_dist = center_dist;
-  config.line_width = line_width;
-  config.touch_padding = touch_padding;
-  config.drag_y_offset = drag_y_offset;
+  config.start_hit_offset = {start_left, start_top, start_right, start_bottom};
+  config.end_hit_offset = {end_left, end_top, end_right, end_bottom};
   editor_core->setHandleConfig(config);
 }
 

@@ -584,15 +584,12 @@ EDITOR_API int editor_get_auto_indent_mode(intptr_t editor_handle);
 
 #pragma region Handle Config
 
-/// Set selection handle appearance and touch configuration
-/// @param radius Water-drop circle radius (default 22.0)
-/// @param center_dist Distance from circle center to tip (default 56.0)
-/// @param line_width Cursor vertical line width (default 3.0)
-/// @param touch_padding Touch hot-zone expansion (default 10.0)
-/// @param drag_y_offset Vertical offset during drag (default 50.0)
+/// Set selection handle hit-test configuration using offset rects
+/// @param start_left/start_top/start_right/start_bottom  Start handle hit area offset from cursor bottom
+/// @param end_left/end_top/end_right/end_bottom  End handle hit area offset from cursor bottom
 EDITOR_API void editor_set_handle_config(intptr_t editor_handle,
-    float radius, float center_dist, float line_width,
-    float touch_padding, float drag_y_offset);
+    float start_left, float start_top, float start_right, float start_bottom,
+    float end_left, float end_top, float end_right, float end_bottom);
 
 #pragma endregion
 

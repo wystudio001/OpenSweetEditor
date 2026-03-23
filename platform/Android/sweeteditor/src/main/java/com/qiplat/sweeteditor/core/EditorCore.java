@@ -623,14 +623,18 @@ public class EditorCore {
 
     /**
      * Sets the selection handle appearance and touch configuration.
-     * Parameters are passed to C++ core (for hit-test) and cached in Java (for drawing).
+     * Hit offset rects are passed to C++ core for touch detection.
      *
      * @param config HandleConfig instance
      */
     public void setHandleConfig(HandleConfig config) {
         if (mNativeHandle == 0) return;
         mHandleConfig = config;
-        nativeSetHandleConfig(mNativeHandle, config.radius, config.centerDist, config.lineWidth, config.touchPadding, config.dragYOffset);
+        nativeSetHandleConfig(mNativeHandle,
+                config.startHitOffset.left, config.startHitOffset.top,
+                config.startHitOffset.right, config.startHitOffset.bottom,
+                config.endHitOffset.left, config.endHitOffset.top,
+                config.endHitOffset.right, config.endHitOffset.bottom);
     }
 
     /**
@@ -1747,7 +1751,9 @@ public class EditorCore {
     private static native int nativeGetAutoIndentMode(long handle);
 
     @CriticalNative
-    private static native void nativeSetHandleConfig(long handle, float radius, float centerDist, float lineWidth, float touchPadding, float dragYOffset);
+    private static native void nativeSetHandleConfig(long handle,
+            float startLeft, float startTop, float startRight, float startBottom,
+            float endLeft, float endTop, float endRight, float endBottom);
 
     @CriticalNative
     private static native void nativeSetScrollbarConfig(long handle, float thickness, float minThumb, float thumbHitPadding,

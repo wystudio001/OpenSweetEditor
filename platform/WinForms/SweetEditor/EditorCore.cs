@@ -192,19 +192,25 @@ namespace SweetEditor {
 	}
 
 	/// <summary>
-	/// Selection handle appearance and touch configuration.
+	/// Selection handle hit-test configuration.
 	/// </summary>
 	public class HandleConfig {
-		/// <summary>Water-drop circle radius (default 22.0)</summary>
-		public float Radius { get; set; } = 22.0f;
-		/// <summary>Distance from circle center to tip (default 56.0)</summary>
-		public float CenterDist { get; set; } = 56.0f;
-		/// <summary>Cursor vertical line width (default 3.0)</summary>
-		public float LineWidth { get; set; } = 3.0f;
-		/// <summary>Touch hot-zone expansion (default 10.0)</summary>
-		public float TouchPadding { get; set; } = 10.0f;
-		/// <summary>Vertical offset during drag (default 50.0)</summary>
-		public float DragYOffset { get; set; } = 50.0f;
+		/// <summary>Start handle hit area offset from cursor bottom (left)</summary>
+		public float StartLeft { get; set; } = -10.0f;
+		/// <summary>Start handle hit area offset from cursor bottom (top)</summary>
+		public float StartTop { get; set; } = 0.0f;
+		/// <summary>Start handle hit area offset from cursor bottom (right)</summary>
+		public float StartRight { get; set; } = 50.0f;
+		/// <summary>Start handle hit area offset from cursor bottom (bottom)</summary>
+		public float StartBottom { get; set; } = 80.0f;
+		/// <summary>End handle hit area offset from cursor bottom (left)</summary>
+		public float EndLeft { get; set; } = -50.0f;
+		/// <summary>End handle hit area offset from cursor bottom (top)</summary>
+		public float EndTop { get; set; } = 0.0f;
+		/// <summary>End handle hit area offset from cursor bottom (right)</summary>
+		public float EndRight { get; set; } = 10.0f;
+		/// <summary>End handle hit area offset from cursor bottom (bottom)</summary>
+		public float EndBottom { get; set; } = 80.0f;
 	}
 
 	/// <summary>
@@ -1457,7 +1463,9 @@ namespace SweetEditor {
 		internal static extern int GetAutoIndentMode(IntPtr handle);
 
 		[DllImport(LibraryName, EntryPoint = "editor_set_handle_config", CallingConvention = CallingConvention.Cdecl)]
-		internal static extern void SetHandleConfig(IntPtr handle, float radius, float centerDist, float lineWidth, float touchPadding, float dragYOffset);
+		internal static extern void SetHandleConfig(IntPtr handle,
+			float startLeft, float startTop, float startRight, float startBottom,
+			float endLeft, float endTop, float endRight, float endBottom);
 
 		[DllImport(LibraryName, EntryPoint = "editor_set_scrollbar_config", CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void SetScrollbarConfig(IntPtr handle,
@@ -2117,11 +2125,13 @@ namespace SweetEditor {
 
 		#region Handle Config
 
-		/// <summary>Sets the selection handle appearance and touch configuration.</summary>
+		/// <summary>Sets the selection handle hit-test configuration.</summary>
 		/// <param name="config">HandleConfig instance</param>
 		public void SetHandleConfig(HandleConfig config) {
 			_handleConfig = config;
-			NativeMethods.SetHandleConfig(nativeHandle, config.Radius, config.CenterDist, config.LineWidth, config.TouchPadding, config.DragYOffset);
+			NativeMethods.SetHandleConfig(nativeHandle,
+				config.StartLeft, config.StartTop, config.StartRight, config.StartBottom,
+				config.EndLeft, config.EndTop, config.EndRight, config.EndBottom);
 		}
 
 		/// <summary>Gets the current handle configuration.</summary>

@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 
@@ -28,6 +29,10 @@ import com.qiplat.sweeteditor.perf.PerfStepRecorder;
  * and TextMeasurer. SweetEditor delegates all rendering to this class.
  */
 final class EditorRenderer {
+    private static final float HANDLE_LINE_WIDTH = 2.0f;
+    private static final float HANDLE_DROP_RADIUS = 10.0f;
+    private static final float HANDLE_CENTER_DIST = 24.0f;
+
     private EditorTheme mTheme;
     private final float mDensity;
 
@@ -206,6 +211,58 @@ final class EditorRenderer {
         return mHandleConfig;
     }
 
+    /**
+     * Compute handle hit-test rects from the actual teardrop drawing parameters
+     * (radius, center distance, 45° rotation). The returned HandleConfig automatically
+     * stays in sync with the visual handle shape.
+     */
+    public static HandleConfig computeHandleHitConfig(float density) {
+        float angle = (float) Math.toRadians(45.0);
+        float cos = (float) Math.cos(angle);
+        float sin = (float) Math.sin(angle);
+
+        float r = HANDLE_DROP_RADIUS;
+        float d = HANDLE_CENTER_DIST;
+
+        // Key points of the teardrop shape before rotation (relative to tip at origin)
+        float[][] points = {
+                {0, 0},
+                {-r, d},
+                {r, d},
+                {0, d + r},
+                {0, d - r * 0.8f}
+        };
+
+        // Rotate +45° (start handle) and compute bounding box
+        float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE;
+        float maxX = -Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
+        for (float[] p : points) {
+            float rx = p[0] * cos - p[1] * sin;
+            float ry = p[0] * sin + p[1] * cos;
+            minX = Math.min(minX, rx);
+            minY = Math.min(minY, ry);
+            maxX = Math.max(maxX, rx);
+            maxY = Math.max(maxY, ry);
+        }
+
+        float pad = 8f;
+
+        RectF startHit = new RectF(
+                (minX - pad) * density,
+                (minY - pad) * density,
+                (maxX + pad) * density,
+                (maxY + pad) * density);
+
+        // End handle rotates -45°, which mirrors the x-axis of the start handle
+        RectF endHit = new RectF(
+                (-maxX - pad) * density,
+                (minY - pad) * density,
+                (-minX + pad) * density,
+                (maxY + pad) * density);
+
+        return new HandleConfig(startHit, endHit);
+    }
+
     public void setScrollbarConfig(@Nullable ScrollbarConfig config) {
         mScrollbarConfig = config;
     }
@@ -318,6 +375,9 @@ final class EditorRenderer {
         drawCursor(canvas, model.cursor, cursorVisible);
         if (drawPerf != null) drawPerf.mark(PerfStepRecorder.STEP_CURSOR);
 
+        drawSelectionHandles(canvas, model.selectionStartHandle, model.selectionEndHandle);
+        if (drawPerf != null) drawPerf.mark(PerfStepRecorder.STEP_HANDLES);
+
         if (model.splitX > 0) {
             canvas.drawRect(0, 0, model.splitX, viewHeight, mBackgroundPaint);
             drawCurrentLineDecoration(canvas, model, 0f, model.splitX);
@@ -329,10 +389,9 @@ final class EditorRenderer {
         drawLineNumbers(canvas, model);
         if (drawPerf != null) drawPerf.mark(PerfStepRecorder.STEP_GUTTER);
 
-        drawSelectionHandles(canvas, model.selectionStartHandle, model.selectionEndHandle);
         boolean needsTransientRefresh = drawScrollbars(canvas, model);
         if (drawPerf != null) {
-            drawPerf.mark(PerfStepRecorder.STEP_HANDLES);
+            drawPerf.mark(PerfStepRecorder.STEP_SCROLLBARS);
             drawPerf.finish();
         }
 
@@ -716,60 +775,37 @@ final class EditorRenderer {
     }
 
     private void drawHandle(Canvas canvas, float x, float y, float height, boolean isStart) {
-        HandleConfig hc = mHandleConfig;
-        if (hc == null) return;
-        float lineWidth = hc.lineWidth;
-        float dropRadius = hc.radius;
-        float dropLength = hc.centerDist;
+        float lineWidth = HANDLE_LINE_WIDTH * mDensity;
+        float dropRadius = HANDLE_DROP_RADIUS * mDensity;
+        float dropLength = HANDLE_CENTER_DIST * mDensity;
 
         canvas.drawRect(x - lineWidth / 2, y, x + lineWidth / 2, y + height, mHandlePaint);
 
         float tipX = x;
-        float tipY, cx, cy;
-        if (isStart) {
-            tipY = y;
-            cx = x - dropRadius + lineWidth / 2;
-            cy = tipY - dropLength;
-        } else {
-            tipY = y + height;
-            cx = x + dropRadius - lineWidth / 2;
-            cy = tipY + dropLength;
-        }
+        float tipY = y + height;
 
+        float angle = isStart ? 45f : -45f;
+        canvas.save();
+        canvas.rotate(angle, tipX, tipY);
+
+        float cx = tipX;
+        float cy = tipY + dropLength;
         float k = dropRadius * 0.5522f;
+
         Path path = new Path();
-
-        if (!isStart) {
-            float left = cx - dropRadius;
-            float right = cx + dropRadius;
-
-            path.moveTo(tipX, tipY);
-            path.cubicTo(tipX, tipY + dropLength * 0.4f,
-                    right, cy - dropRadius * 0.8f,
-                    right, cy);
-            path.cubicTo(right, cy + k, cx + k, cy + dropRadius, cx, cy + dropRadius);
-            path.cubicTo(cx - k, cy + dropRadius, left, cy + k, left, cy);
-            path.cubicTo(left, cy - dropRadius * 0.8f,
-                    tipX, tipY + dropLength * 0.4f,
-                    tipX, tipY);
-        } else {
-            float left = cx - dropRadius;
-            float right = cx + dropRadius;
-            float top = cy - dropRadius;
-
-            path.moveTo(tipX, tipY);
-            path.cubicTo(tipX, tipY - dropLength * 0.4f,
-                    left, cy + dropRadius * 0.8f,
-                    left, cy);
-            path.cubicTo(left, cy - k, cx - k, top, cx, top);
-            path.cubicTo(cx + k, top, right, cy - k, right, cy);
-            path.cubicTo(right, cy + dropRadius * 0.8f,
-                    tipX, tipY - dropLength * 0.4f,
-                    tipX, tipY);
-        }
-
+        path.moveTo(tipX, tipY);
+        path.cubicTo(tipX, tipY + dropLength * 0.4f,
+                cx - dropRadius, cy - dropRadius * 0.8f,
+                cx - dropRadius, cy);
+        path.cubicTo(cx - dropRadius, cy + k, cx - k, cy + dropRadius, cx, cy + dropRadius);
+        path.cubicTo(cx + k, cy + dropRadius, cx + dropRadius, cy + k, cx + dropRadius, cy);
+        path.cubicTo(cx + dropRadius, cy - dropRadius * 0.8f,
+                tipX, tipY + dropLength * 0.4f,
+                tipX, tipY);
         path.close();
         canvas.drawPath(path, mHandlePaint);
+
+        canvas.restore();
     }
 
     private void drawGuideSegments(Canvas canvas, @Nullable List<GuideSegment> segments) {

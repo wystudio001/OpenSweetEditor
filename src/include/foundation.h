@@ -40,6 +40,18 @@ namespace NS_SWEETEDITOR {
     U8String dump() const;
   };
 
+  /// Offset rectangle relative to a reference point
+  struct OffsetRect {
+    float left {0};
+    float top {0};
+    float right {0};
+    float bottom {0};
+
+    bool contains(float dx, float dy) const {
+      return dx >= left && dx <= right && dy >= top && dy <= bottom;
+    }
+  };
+
   /// Editor viewport
   struct Viewport {
     /// Editor width

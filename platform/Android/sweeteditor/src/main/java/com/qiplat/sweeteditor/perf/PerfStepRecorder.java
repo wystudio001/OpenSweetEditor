@@ -32,6 +32,7 @@ public final class PerfStepRecorder {
     public static final String STEP_GUTTER = "gutter";
     public static final String STEP_LINE_NO = "lineNo";
     public static final String STEP_HANDLES = "handles";
+    public static final String STEP_SCROLLBARS = "scrollbars";
 
     private final String[] stepNames = new String[MAX_STEPS];
     private final long[] stepNanos = new long[MAX_STEPS];

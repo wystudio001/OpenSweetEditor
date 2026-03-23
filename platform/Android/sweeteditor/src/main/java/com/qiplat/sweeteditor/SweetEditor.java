@@ -1165,6 +1165,21 @@ public class SweetEditor extends View {
         mEditorCore.clearAllDecorations();
     }
 
+    /**
+     * Flush all pending changes (decoration / layout / scroll / selection) and trigger a redraw.
+     * <p>
+     * Decoration setters (setLineSpans, clearHighlights, setFoldRegions, etc.) no longer
+     * trigger a redraw automatically. Call this method once after a batch of decoration
+     * updates to make them take effect.
+     * <p>
+     * Text-editing, cursor-movement and configuration APIs still call flush() internally,
+     * so callers only need to invoke this explicitly for decoration operations.
+     */
+    public void flush() {
+        mModelDirty = true;
+        postInvalidate();
+    }
+
     // ==================== View Layer Extension Configuration ====================
 
     /**
@@ -1683,7 +1698,7 @@ public class SweetEditor extends View {
         float density = getResources().getDisplayMetrics().density;
         mRenderer = new EditorRenderer(mTheme, density);
 
-        mRenderer.setHandleConfig(new HandleConfig());
+        mRenderer.setHandleConfig(EditorRenderer.computeHandleHitConfig(density));
 
         float scrollbarThicknessPx = 12.0f * density;
         float scrollbarMinThumbPx = 48.0f * density;
@@ -1726,21 +1741,6 @@ public class SweetEditor extends View {
         setFocusable(true);
         setFocusableInTouchMode(true);
         loadDocument(new Document(""));
-    }
-
-    /**
-     * Flush all pending changes (decoration / layout / scroll / selection) and trigger a redraw.
-     * <p>
-     * Decoration setters (setLineSpans, clearHighlights, setFoldRegions, etc.) no longer
-     * trigger a redraw automatically. Call this method once after a batch of decoration
-     * updates to make them take effect.
-     * <p>
-     * Text-editing, cursor-movement and configuration APIs still call flush() internally,
-     * so callers only need to invoke this explicitly for decoration operations.
-     */
-    public void flush() {
-        mModelDirty = true;
-        postInvalidate();
     }
 
     private void scheduleTransientScrollbarRefresh(int requestedDelayMs) {

@@ -403,8 +403,12 @@ public:
     return static_cast<jint>(editor_get_auto_indent_mode(static_cast<intptr_t>(handle)));
   }
 
-  static void setHandleConfig(jlong handle, jfloat radius, jfloat centerDist, jfloat lineWidth, jfloat touchPadding, jfloat dragYOffset) {
-    editor_set_handle_config(static_cast<intptr_t>(handle), radius, centerDist, lineWidth, touchPadding, dragYOffset);
+  static void setHandleConfig(jlong handle,
+      jfloat startLeft, jfloat startTop, jfloat startRight, jfloat startBottom,
+      jfloat endLeft, jfloat endTop, jfloat endRight, jfloat endBottom) {
+    editor_set_handle_config(static_cast<intptr_t>(handle),
+        startLeft, startTop, startRight, startBottom,
+        endLeft, endTop, endRight, endBottom);
   }
 
   static void setScrollbarConfig(jlong handle, jfloat thickness, jfloat minThumb, jfloat thumbHitPadding,
@@ -842,7 +846,7 @@ public:
       {"nativeIsReadOnly", "(J)Z", (void*) isReadOnly},
       {"nativeSetAutoIndentMode", "(JI)V", (void*) setAutoIndentMode},
       {"nativeGetAutoIndentMode", "(J)I", (void*) getAutoIndentMode},
-      {"nativeSetHandleConfig", "(JFFFFF)V", (void*) setHandleConfig},
+      {"nativeSetHandleConfig", "(JFFFFFFFF)V", (void*) setHandleConfig},
       {"nativeSetScrollbarConfig", "(JFFFIZIII)V", (void*) setScrollbarConfig},
       {"nativeGetPositionRect", "(JII)[F", (void*) getPositionRect},
       {"nativeGetCursorRect", "(J)[F", (void*) getCursorRect},

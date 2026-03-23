@@ -35,18 +35,13 @@ namespace NS_SWEETEDITOR {
     U8String dump() const;
   };
 
-  /// Selection handle appearance and touch configuration
+  /// Selection handle hit-test configuration.
+  /// All geometry is owned by the platform drawing layer; C++ only needs hit areas.
   struct HandleConfig {
-    /// Water-drop circle radius
-    float radius {22.0f};
-    /// Distance from water-drop circle center to the tip
-    float center_dist {56.0f};
-    /// Cursor vertical line width
-    float line_width {3.0f};
-    /// Touch hot-zone expansion around the vertical line
-    float touch_padding {10.0f};
-    /// Vertical offset for drag position (moves finger up to avoid occlusion)
-    float drag_y_offset {50.0f};
+    /// Hit area for the start handle, as an offset rect relative to cursor bottom-left
+    OffsetRect start_hit_offset {-15.0f, 0.0f, 45.0f, 40.0f};
+    /// Hit area for the end handle, as an offset rect relative to cursor bottom-left
+    OffsetRect end_hit_offset {-45.0f, 0.0f, 15.0f, 40.0f};
   };
 
   enum class ScrollbarMode : uint8_t {

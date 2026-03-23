@@ -386,31 +386,33 @@ public class EditorCore implements AutoCloseable {
 
     // ===================== Handle Config =====================
 
-    /** Selection handle appearance and touch configuration */
+    /** Selection handle hit-test configuration */
     public static class HandleConfig {
-        public final float radius;
-        public final float centerDist;
-        public final float lineWidth;
-        public final float touchPadding;
-        public final float dragYOffset;
+        public final float startLeft, startTop, startRight, startBottom;
+        public final float endLeft, endTop, endRight, endBottom;
 
         public HandleConfig() {
-            this(22.0f, 56.0f, 3.0f, 10.0f, 50.0f);
+            this(-10f, 0f, 50f, 80f, -50f, 0f, 10f, 80f);
         }
 
-        public HandleConfig(float radius, float centerDist, float lineWidth, float touchPadding, float dragYOffset) {
-            this.radius = radius;
-            this.centerDist = centerDist;
-            this.lineWidth = lineWidth;
-            this.touchPadding = touchPadding;
-            this.dragYOffset = dragYOffset;
+        public HandleConfig(float startLeft, float startTop, float startRight, float startBottom,
+                            float endLeft, float endTop, float endRight, float endBottom) {
+            this.startLeft = startLeft;
+            this.startTop = startTop;
+            this.startRight = startRight;
+            this.startBottom = startBottom;
+            this.endLeft = endLeft;
+            this.endTop = endTop;
+            this.endRight = endRight;
+            this.endBottom = endBottom;
         }
     }
 
     public void setHandleConfig(HandleConfig config) {
         this.handleConfig = config;
-        EditorNative.setHandleConfig(nativeHandle, config.radius, config.centerDist,
-                config.lineWidth, config.touchPadding, config.dragYOffset);
+        EditorNative.setHandleConfig(nativeHandle,
+                config.startLeft, config.startTop, config.startRight, config.startBottom,
+                config.endLeft, config.endTop, config.endRight, config.endBottom);
     }
 
     public HandleConfig getHandleConfig() {

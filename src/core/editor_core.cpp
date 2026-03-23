@@ -75,7 +75,11 @@ namespace NS_SWEETEDITOR {
 
   void EditorCore::setHandleConfig(const HandleConfig& config) {
     m_settings_.handle = config;
-    LOGD("EditorCore::setHandleConfig(), radius = %.1f, center_dist = %.1f", config.radius, config.center_dist);
+    LOGD("EditorCore::setHandleConfig(), start_hit=[%.1f,%.1f,%.1f,%.1f], end_hit=[%.1f,%.1f,%.1f,%.1f]",
+         config.start_hit_offset.left, config.start_hit_offset.top,
+         config.start_hit_offset.right, config.start_hit_offset.bottom,
+         config.end_hit_offset.left, config.end_hit_offset.top,
+         config.end_hit_offset.right, config.end_hit_offset.bottom);
   }
 
   void EditorCore::setScrollbarConfig(const ScrollbarConfig& config) {
@@ -1590,56 +1594,25 @@ namespace NS_SWEETEDITOR {
   EditorCore::HandleDragTarget EditorCore::hitTestHandle(const PointF& screen_point) const {
     if (!m_cached_handles_valid_ || !m_has_selection_) return HandleDragTarget::NONE;
 
-    // Read handle params from HandleConfig (kept in sync with platform teardrop drawing)
-    const float kHandleRadius = m_settings_.handle.radius;
-    const float kHandleCenterDist = m_settings_.handle.center_dist;
-    const float kTouchPadding = m_settings_.handle.touch_padding;
+    const auto& start_rect = m_settings_.handle.start_hit_offset;
+    const auto& end_rect = m_settings_.handle.end_hit_offset;
+    const float h = m_cached_handle_height_;
 
-    // start handle: tip at top of vertical line (handle_pos), teardrop above-left
-    // end handle: tip at bottom of vertical line (handle_pos.y + height), teardrop below-right
-    auto hitTestStart = [&](const PointF& pos) -> bool {
-      // Teardrop circle center: (pos.x - radius + lineWidth/2, pos.y - centerDist)
-      float cx = pos.x - kHandleRadius;
-      float cy = pos.y - kHandleCenterDist;
-      // Hit area: vertical line area + teardrop circle area (with padding)
-      float dx_line = std::abs(screen_point.x - pos.x);
-      bool in_line = dx_line <= kTouchPadding
-                     && screen_point.y >= pos.y - kTouchPadding
-                     && screen_point.y <= pos.y + m_cached_handle_height_ + kTouchPadding;
-      float dx_circle = screen_point.x - cx;
-      float dy_circle = screen_point.y - cy;
-      bool in_circle = (dx_circle * dx_circle + dy_circle * dy_circle)
-                       <= (kHandleRadius + kTouchPadding) * (kHandleRadius + kTouchPadding);
-      return in_line || in_circle;
+    auto hitTest = [&](const PointF& pos, const OffsetRect& rect) -> bool {
+      float dx = screen_point.x - pos.x;
+      float dy = screen_point.y - (pos.y + h);
+      return rect.contains(dx, dy);
     };
 
-    auto hitTestEnd = [&](const PointF& pos) -> bool {
-      // Teardrop circle center: (pos.x + radius, pos.y + height + centerDist)
-      float cx = pos.x + kHandleRadius;
-      float cy = pos.y + m_cached_handle_height_ + kHandleCenterDist;
-      // Vertical line area
-      float dx_line = std::abs(screen_point.x - pos.x);
-      bool in_line = dx_line <= kTouchPadding
-                     && screen_point.y >= pos.y - kTouchPadding
-                     && screen_point.y <= pos.y + m_cached_handle_height_ + kTouchPadding;
-      // Teardrop circle area
-      float dx_circle = screen_point.x - cx;
-      float dy_circle = screen_point.y - cy;
-      bool in_circle = (dx_circle * dx_circle + dy_circle * dy_circle)
-                       <= (kHandleRadius + kTouchPadding) * (kHandleRadius + kTouchPadding);
-      return in_line || in_circle;
-    };
-
-    // Prioritize checking the handle closer to the touch point
     float dist_start = screen_point.distance(m_cached_start_handle_pos_);
     float dist_end = screen_point.distance(m_cached_end_handle_pos_);
 
     if (dist_start <= dist_end) {
-      if (hitTestStart(m_cached_start_handle_pos_)) return HandleDragTarget::START;
-      if (hitTestEnd(m_cached_end_handle_pos_)) return HandleDragTarget::END;
+      if (hitTest(m_cached_start_handle_pos_, start_rect)) return HandleDragTarget::START;
+      if (hitTest(m_cached_end_handle_pos_, end_rect)) return HandleDragTarget::END;
     } else {
-      if (hitTestEnd(m_cached_end_handle_pos_)) return HandleDragTarget::END;
-      if (hitTestStart(m_cached_start_handle_pos_)) return HandleDragTarget::START;
+      if (hitTest(m_cached_end_handle_pos_, end_rect)) return HandleDragTarget::END;
+      if (hitTest(m_cached_start_handle_pos_, start_rect)) return HandleDragTarget::START;
     }
     return HandleDragTarget::NONE;
   }
@@ -1647,19 +1620,15 @@ namespace NS_SWEETEDITOR {
   void EditorCore::dragHandleTo(HandleDragTarget target, const PointF& screen_point) {
     if (!m_has_selection_ || target == HandleDragTarget::NONE) return;
 
-    // Use line_height-aware offset so the cursor stays clear of the finger regardless of
-    // font size or zoom level.  Total offset = configured drag_y_offset + one line height.
-    const float line_height = m_text_layout_->getLineHeight();
-    const float total_offset = m_settings_.handle.drag_y_offset + line_height;
+    // Derive drag offset from the active handle's hit rect so the finger doesn't obscure the cursor.
+    const auto& hit_rect = (target == HandleDragTarget::START)
+        ? m_settings_.handle.start_hit_offset
+        : m_settings_.handle.end_hit_offset;
 
-    // START handle (teardrop above): finger is above, cursor below -> offset downward
-    // END handle (teardrop below): finger is below, cursor above -> offset upward
+    // Only offset by the handle's visual extent (hit_rect.bottom); adding line_height
+    // would overshoot and jump the cursor to the previous line on first touch.
     PointF adjusted_point = screen_point;
-    if (target == HandleDragTarget::START) {
-      adjusted_point.y += total_offset;
-    } else {
-      adjusted_point.y -= total_offset;
-    }
+    adjusted_point.y -= hit_rect.bottom;
 
     TextPosition pos = m_text_layout_->hitTest(adjusted_point);
 
@@ -2839,9 +2808,9 @@ namespace NS_SWEETEDITOR {
     // Mouse drag does NOT apply this offset (cursor does not occlude text).
     PointF adjusted_point = screen_point;
     if (!is_mouse) {
-      const float line_height = m_text_layout_->getLineHeight();
-      const float total_offset = m_settings_.handle.drag_y_offset + line_height;
-      adjusted_point.y -= total_offset;
+      const float hit_bottom = std::max(m_settings_.handle.start_hit_offset.bottom,
+                                        m_settings_.handle.end_hit_offset.bottom);
+      adjusted_point.y -= hit_bottom;
     }
 
     TextPosition pos = m_text_layout_->hitTest(adjusted_point);
