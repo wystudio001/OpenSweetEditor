@@ -100,14 +100,47 @@ public final class SweetEditorViewiOS: UIView {
         editorView.setBatchLineGutterIcons(iconsByLine)
     }
 
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
     public func setMaxGutterIcons(_ count: UInt32) {
         editorView.setMaxGutterIcons(count)
     }
 
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
+    public func setFoldArrowMode(_ mode: FoldArrowMode) {
+        editorView.setFoldArrowMode(mode)
+    }
+
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
+    public func setLineSpacing(add: Float, mult: Float) {
+        editorView.setLineSpacing(add: add, mult: mult)
+    }
+
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
+    public func setContentStartPadding(_ padding: Float) {
+        editorView.setContentStartPadding(padding)
+    }
+
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
+    public func setShowSplitLine(_ show: Bool) {
+        editorView.setShowSplitLine(show)
+    }
+
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
+    public func setCurrentLineRenderMode(_ mode: CurrentLineRenderMode) {
+        editorView.setCurrentLineRenderMode(mode)
+    }
+
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
+    public func setReadOnly(_ readOnly: Bool) {
+        editorView.setReadOnly(readOnly)
+    }
+
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
     public func setWrapMode(_ mode: Int) {
         editorView.setWrapMode(mode)
     }
 
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
     public func setScale(_ scale: Float) {
         editorView.setScale(scale)
     }

@@ -216,6 +216,30 @@ class IOSEditorView: UIView, UIKeyInput, UITextInputTraits, UIPointerInteraction
         settings.setMaxGutterIcons(count)
     }
 
+    func setFoldArrowMode(_ mode: FoldArrowMode) {
+        settings.setFoldArrowMode(mode)
+    }
+
+    func setLineSpacing(add: Float, mult: Float) {
+        settings.setLineSpacing(add: add, mult: mult)
+    }
+
+    func setContentStartPadding(_ padding: Float) {
+        settings.setContentStartPadding(padding)
+    }
+
+    func setShowSplitLine(_ show: Bool) {
+        settings.setShowSplitLine(show)
+    }
+
+    func setCurrentLineRenderMode(_ mode: CurrentLineRenderMode) {
+        settings.setCurrentLineRenderMode(mode)
+    }
+
+    func setReadOnly(_ readOnly: Bool) {
+        settings.setReadOnly(readOnly)
+    }
+
     func setLineDiagnostics(line: Int, items: [SweetEditorCore.DiagnosticItem]) {
         editorCore.setLineDiagnostics(line: line, items: items)
         rebuildAndRedraw()

@@ -27,6 +27,15 @@ protocol EditorSettingsHost: AnyObject {
     func applyEditorSettings(_ settings: EditorSettings)
 }
 
+/// Centralized runtime editor configuration shared by Apple platform bindings.
+///
+/// This type mirrors the Android-side `EditorSettings` design: runtime behavior knobs
+/// such as scale, wrapping, read-only mode, line spacing, split-line visibility, and
+/// gutter/icon limits live here and take effect immediately when mutated.
+///
+/// Keep theme, language configuration, highlights, diagnostics, and provider-style
+/// integrations outside this type. Those are separate editor concepts and should stay
+/// on their dedicated APIs.
 public final class EditorSettings {
     private weak var host: EditorSettingsHost?
 
@@ -54,62 +63,74 @@ public final class EditorSettings {
         self.host = host
     }
 
+    /// Updates the editor text size and applies the change immediately.
     public func setEditorTextSize(_ textSize: Float) {
         editorTextSize = textSize
         apply()
     }
 
+    /// Updates the editor typeface and applies the change immediately.
     public func setTypeface(_ typeface: String) {
         self.typeface = typeface
         apply()
     }
 
+    /// Updates editor scale and applies the change immediately.
     public func setScale(_ scale: Float) {
         self.scale = scale
         apply()
     }
 
+    /// Updates fold-arrow rendering mode and applies the change immediately.
     public func setFoldArrowMode(_ mode: FoldArrowMode) {
         foldArrowMode = mode
         apply()
     }
 
+    /// Updates wrapping mode and applies the change immediately.
     public func setWrapMode(_ mode: WrapMode) {
         wrapMode = mode
         apply()
     }
 
+    /// Updates line spacing and applies the change immediately.
     public func setLineSpacing(add: Float, mult: Float) {
         lineSpacingAdd = add
         lineSpacingMult = mult
         apply()
     }
 
+    /// Updates leading content padding and applies the change immediately.
     public func setContentStartPadding(_ padding: Float) {
         contentStartPadding = max(0, padding)
         apply()
     }
 
+    /// Shows or hides the split line and applies the change immediately.
     public func setShowSplitLine(_ show: Bool) {
         showSplitLine = show
         apply()
     }
 
+    /// Updates current-line rendering mode and applies the change immediately.
     public func setCurrentLineRenderMode(_ mode: CurrentLineRenderMode) {
         currentLineRenderMode = mode
         apply()
     }
 
+    /// Updates auto-indent behavior and applies the change immediately.
     public func setAutoIndentMode(_ mode: AutoIndentMode) {
         autoIndentMode = mode
         apply()
     }
 
+    /// Updates read-only mode and applies the change immediately.
     public func setReadOnly(_ readOnly: Bool) {
         self.readOnly = readOnly
         apply()
     }
 
+    /// Updates the maximum visible gutter icon count and applies the change immediately.
     public func setMaxGutterIcons(_ count: UInt32) {
         maxGutterIcons = count
         apply()

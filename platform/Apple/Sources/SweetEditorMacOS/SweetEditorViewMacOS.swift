@@ -249,30 +249,37 @@ public class SweetEditorViewMacOS: NSView, NSTextInputClient, CompletionEditorAc
         rebuildAndRedraw()
     }
 
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
     public func setMaxGutterIcons(_ count: UInt32) {
         settings.setMaxGutterIcons(count)
     }
 
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
     public func setFoldArrowMode(_ mode: FoldArrowMode) {
         settings.setFoldArrowMode(mode)
     }
 
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
     public func setLineSpacing(add: Float, mult: Float) {
         settings.setLineSpacing(add: add, mult: mult)
     }
 
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
     public func setContentStartPadding(_ padding: Float) {
         settings.setContentStartPadding(padding)
     }
 
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
     public func setShowSplitLine(_ show: Bool) {
         settings.setShowSplitLine(show)
     }
 
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
     public func setCurrentLineRenderMode(_ mode: CurrentLineRenderMode) {
         settings.setCurrentLineRenderMode(mode)
     }
 
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
     public func setReadOnly(_ readOnly: Bool) {
         settings.setReadOnly(readOnly)
     }
@@ -509,6 +516,7 @@ public class SweetEditorViewMacOS: NSView, NSTextInputClient, CompletionEditorAc
         return metadata as? T
     }
 
+    /// Compatibility wrapper for callers not yet migrated to `settings`.
     public func setWrapMode(_ mode: Int) {
         let wrapModes: [WrapMode] = [.none, .charBreak, .wordBreak]
         guard wrapModes.indices.contains(mode) else { return }
