@@ -2452,7 +2452,21 @@ namespace NS_SWEETEDITOR {
       std::swap(sel_start, sel_end);
     }
 
-    for (size_t line = sel_start.line; line <= sel_end.line && line < m_document_->getLineCount(); ++line) {
+    // Determine visible line range from already-laid-out visual lines.
+    // Only compute selection rects for lines that are actually on screen;
+    // for a 20 000-line select-all this reduces work from O(N) to O(visible).
+    size_t vis_first = sel_start.line;
+    size_t vis_last  = sel_end.line;
+    if (!model.lines.empty()) {
+      vis_first = model.lines.front().logical_line;
+      vis_last  = model.lines.back().logical_line;
+    }
+
+    // Clamp iteration to the intersection of selection range and visible range
+    size_t loop_start = std::max(sel_start.line, vis_first);
+    size_t loop_end   = std::min(sel_end.line, vis_last);
+
+    for (size_t line = loop_start; line <= loop_end && line < m_document_->getLineCount(); ++line) {
       // Skip fold-hidden lines
       const auto& ll = m_document_->getLogicalLines()[line];
       if (ll.is_fold_hidden) continue;
