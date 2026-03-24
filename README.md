@@ -36,15 +36,16 @@ It is well suited for long-term evolving editor infrastructure in IDEs, AI progr
 
 ## Platform Support Status
 
-| Platform | Status         | Rendering Technology    | Notes                                          |
-| -------- | -------------- | ----------------------- | ---------------------------------------------- |
-| Android  | ✅ Implemented  | Canvas + Paint          | Integrated                                     |
-| iOS      | ✅ Implemented  | CoreText + CoreGraphics | Integrated                                     |
-| macOS    | ✅ Implemented  | CoreText + CoreGraphics | Integrated                                     |
-| Windows  | ✅ Implemented  | GDI+                    | Integrated                                     |
-| Swing    | ✅ Implemented  | Java2D                  | Integrated                                     |
-| Web      | 🚧 In Progress | -                       | Directory created, bindings not yet integrated |
-| OHOS     | 🚧 In Progress | -                       | Placeholder directory only                     |
+| Platform SDK | Status | Rendering Technology | UI Framework |
+| --- | --- | --- | --- |
+| Android (official, [repo](./platform/Android)) | ✅ Implemented | Canvas + Paint | Android View |
+| Android Compose | ❌ Pending | - | Compose |
+| iOS (official, [repo](./platform/Apple)) | ✅ Implemented | CoreText + CoreGraphics | UIKit (wrapped) / SwiftUI (being refined) |
+| macOS (official, [repo](./platform/Apple)) | ✅ Implemented | CoreText + CoreGraphics | AppKit (wrapped) / SwiftUI (being refined) |
+| Windows (official, [repo](./platform/WinForms)) | ✅ Implemented | GDI+ | WinForms |
+| Swing (official, [repo](./platform/Swing)) | ✅ Implemented | Java2D | Swing |
+| Web (official, [repo](./platform/Emscripten)) | 🚧 In Progress | - | - |
+| OHOS (official, [repo](./platform/OHOS)) | 🚧 In Progress | - | - |
 
 ## Overall Architecture
 
