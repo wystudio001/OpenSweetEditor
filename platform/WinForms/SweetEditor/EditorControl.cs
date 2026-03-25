@@ -170,6 +170,17 @@ namespace SweetEditor {
 		/// <summary>Bracket match highlight background color (ARGB, typically semi-transparent).</summary>
 		public Color BracketHighlightBgColor { get; set; }
 
+		/// <summary>Completion popup background color.</summary>
+		public Color CompletionBgColor { get; set; }
+		/// <summary>Completion popup border color.</summary>
+		public Color CompletionBorderColor { get; set; }
+		/// <summary>Completion popup selected row highlight color.</summary>
+		public Color CompletionSelectedBgColor { get; set; }
+		/// <summary>Completion popup label text color.</summary>
+		public Color CompletionLabelColor { get; set; }
+		/// <summary>Completion popup detail text color.</summary>
+		public Color CompletionDetailColor { get; set; }
+
 		/// <summary>
 		/// Theme text style mapping.
 		/// Key: style ID. Value: text style definition.
@@ -219,6 +230,11 @@ namespace SweetEditor {
 			LinkedEditingInactiveColor = Color.FromArgb(unchecked((int)0x667AA2F7)),
 			BracketHighlightBorderColor = Color.FromArgb(unchecked((int)0xCC9ECE6A)),
 			BracketHighlightBgColor = Color.FromArgb(unchecked((int)0x2A9ECE6A)),
+			CompletionBgColor = Color.FromArgb(unchecked((int)0xF0252830)),
+			CompletionBorderColor = Color.FromArgb(unchecked((int)0x40607090)),
+			CompletionSelectedBgColor = Color.FromArgb(unchecked((int)0x3D5580BB)),
+			CompletionLabelColor = Color.FromArgb(unchecked((int)0xFFD8DEE9)),
+			CompletionDetailColor = Color.FromArgb(unchecked((int)0xFF7A8494)),
 			TextStyles = new() {
 				[STYLE_KEYWORD] = new TextStyle(unchecked((int)0xFF7AA2F7), 1),
 				[STYLE_STRING] = new TextStyle(unchecked((int)0xFF9ECE6A), 0),
@@ -266,6 +282,11 @@ namespace SweetEditor {
 			LinkedEditingInactiveColor = Color.FromArgb(unchecked((int)0x662563EB)),
 			BracketHighlightBorderColor = Color.FromArgb(unchecked((int)0xCC0F766E)),
 			BracketHighlightBgColor = Color.FromArgb(unchecked((int)0x260F766E)),
+			CompletionBgColor = Color.FromArgb(unchecked((int)0xF0FAFBFD)),
+			CompletionBorderColor = Color.FromArgb(unchecked((int)0x30A0A8B8)),
+			CompletionSelectedBgColor = Color.FromArgb(unchecked((int)0x3D3B82F6)),
+			CompletionLabelColor = Color.FromArgb(unchecked((int)0xFF1F2937)),
+			CompletionDetailColor = Color.FromArgb(unchecked((int)0xFF8A94A6)),
 			TextStyles = new() {
 				[STYLE_KEYWORD] = new TextStyle(unchecked((int)0xFF3559D6), 1),
 				[STYLE_STRING] = new TextStyle(unchecked((int)0xFF0F7B6C), 0),
@@ -472,12 +493,13 @@ namespace SweetEditor {
 			this.BackColor = currentTheme.BackgroundColor;
 			this.ForeColor = currentTheme.TextColor;
 
-			// Re-register text styles to C++ core after theme change.
 			if (editorCore != null) {
 				foreach (var kvp in theme.TextStyles) {
 					editorCore.registerTextStyle(kvp.Key, kvp.Value.Color, kvp.Value.BackgroundColor, kvp.Value.FontStyle);
 				}
 			}
+
+			completionPopupController?.ApplyTheme(theme);
 
 			Flush();
 		}
@@ -1024,7 +1046,7 @@ namespace SweetEditor {
 
 			// Completion manager and popup controller.
 			completionProviderManager = new CompletionProviderManager(this);
-			completionPopupController = new CompletionPopupController(this);
+			completionPopupController = new CompletionPopupController(this, currentTheme);
 			completionProviderManager.OnItemsUpdated += items => {
 				UpdateCompletionPopupCursorAnchor();
 				completionPopupController.UpdateItems(items);

@@ -99,6 +99,17 @@ public class EditorTheme {
     /** Bracket match highlight background color, typically with alpha. */
     public Color bracketHighlightBgColor;
 
+    /** Completion popup background color. */
+    public Color completionBgColor;
+    /** Completion popup border color. */
+    public Color completionBorderColor;
+    /** Completion popup selected row highlight color. */
+    public Color completionSelectedBgColor;
+    /** Completion popup label text color. */
+    public Color completionLabelColor;
+    /** Completion popup detail text color. */
+    public Color completionDetailColor;
+
     /**
      * Theme text style mapping (extensible).
      * <p>Key: styleId, Value: {@link TextStyle}.
@@ -152,6 +163,11 @@ public class EditorTheme {
         t.linkedEditingInactiveColor = argb(0x667AA2F7);
         t.bracketHighlightBorderColor = argb(0xCC9ECE6A);
         t.bracketHighlightBgColor     = argb(0x2A9ECE6A);
+        t.completionBgColor              = argb(0xF0252830);
+        t.completionBorderColor          = argb(0x40607090);
+        t.completionSelectedBgColor      = argb(0x3D5580BB);
+        t.completionLabelColor           = argb(0xFFD8DEE9);
+        t.completionDetailColor          = argb(0xFF7A8494);
 
         t.defineTextStyle(STYLE_KEYWORD, new TextStyle(0xFF7AA2F7, TextStyle.BOLD));
         t.defineTextStyle(STYLE_STRING, new TextStyle(0xFF9ECE6A, TextStyle.NORMAL));
@@ -200,6 +216,11 @@ public class EditorTheme {
         t.linkedEditingInactiveColor = argb(0x662563EB);
         t.bracketHighlightBorderColor = argb(0xCC0F766E);
         t.bracketHighlightBgColor     = argb(0x260F766E);
+        t.completionBgColor              = argb(0xF0FAFBFD);
+        t.completionBorderColor          = argb(0x30A0A8B8);
+        t.completionSelectedBgColor      = argb(0x3D3B82F6);
+        t.completionLabelColor           = argb(0xFF1F2937);
+        t.completionDetailColor          = argb(0xFF8A94A6);
 
         t.defineTextStyle(STYLE_KEYWORD, new TextStyle(0xFF3559D6, TextStyle.BOLD));
         t.defineTextStyle(STYLE_STRING, new TextStyle(0xFF0F7B6C, TextStyle.NORMAL));

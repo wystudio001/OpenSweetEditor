@@ -390,6 +390,10 @@ public class SweetEditor extends View {
             mInlineSuggestionController.applyTheme(theme);
         }
 
+        if (mCompletionPopupController != null) {
+            mCompletionPopupController.applyTheme(theme);
+        }
+
         flush();
     }
 
@@ -1458,9 +1462,9 @@ public class SweetEditor extends View {
      * Prefers textEdit's specified replacement range, otherwise falls back to wordRange to delete typed prefix.
      */
     private void applyCompletionItem(@NonNull CompletionItem item) {
-        CompletionItem.TextEdit textEdit = item.getTextEdit();
-        boolean isSnippet = item.getInsertTextFormat() == CompletionItem.INSERT_TEXT_FORMAT_SNIPPET;
-        String text = item.getInsertText() != null ? item.getInsertText() : item.getLabel();
+        CompletionItem.TextEdit textEdit = item.textEdit;
+        boolean isSnippet = item.insertTextFormat == CompletionItem.INSERT_TEXT_FORMAT_SNIPPET;
+        String text = item.insertText != null ? item.insertText : item.label;
 
         // Determine the range to replace: textEdit takes priority, otherwise fallback to wordRange
         TextRange replaceRange = null;
@@ -1724,7 +1728,7 @@ public class SweetEditor extends View {
         mDecorationProviderManager = new DecorationProviderManager(this);
 
         mCompletionProviderManager = new CompletionProviderManager(this);
-        mCompletionPopupController = new CompletionPopupController(context, this);
+        mCompletionPopupController = new CompletionPopupController(context, this, mTheme);
         mCompletionProviderManager.setListener(mCompletionPopupController);
         mCompletionPopupController.setConfirmListener(this::applyCompletionItem);
 

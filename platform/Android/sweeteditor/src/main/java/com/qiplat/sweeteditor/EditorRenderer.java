@@ -375,9 +375,6 @@ final class EditorRenderer {
         drawCursor(canvas, model.cursor, cursorVisible);
         if (drawPerf != null) drawPerf.mark(PerfStepRecorder.STEP_CURSOR);
 
-        drawSelectionHandles(canvas, model.selectionStartHandle, model.selectionEndHandle);
-        if (drawPerf != null) drawPerf.mark(PerfStepRecorder.STEP_HANDLES);
-
         if (model.splitX > 0) {
             canvas.drawRect(0, 0, model.splitX, viewHeight, mBackgroundPaint);
             drawCurrentLineDecoration(canvas, model, 0f, model.splitX);
@@ -388,6 +385,9 @@ final class EditorRenderer {
 
         drawLineNumbers(canvas, model);
         if (drawPerf != null) drawPerf.mark(PerfStepRecorder.STEP_GUTTER);
+
+        drawSelectionHandles(canvas, model.selectionStartHandle, model.selectionEndHandle);
+        if (drawPerf != null) drawPerf.mark(PerfStepRecorder.STEP_HANDLES);
 
         boolean needsTransientRefresh = drawScrollbars(canvas, model);
         if (drawPerf != null) {

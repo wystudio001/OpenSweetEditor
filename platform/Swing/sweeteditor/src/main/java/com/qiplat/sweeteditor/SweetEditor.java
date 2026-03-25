@@ -84,7 +84,7 @@ public class SweetEditor extends JPanel {
 
         // Completion manager and popup controller
         completionProviderManager = new CompletionProviderManager(this);
-        completionPopupController = new CompletionPopupController(this);
+        completionPopupController = new CompletionPopupController(this, theme);
         completionProviderManager.setListener(completionPopupController);
         completionPopupController.setConfirmListener(this::applyCompletionItem);
 
@@ -143,6 +143,9 @@ public class SweetEditor extends JPanel {
         for (var entry : theme.textStyles.entrySet()) {
             TextStyle v = entry.getValue();
             editorCore.registerTextStyle(entry.getKey(), v.color, v.backgroundColor, v.fontStyle);
+        }
+        if (completionPopupController != null) {
+            completionPopupController.applyTheme(theme);
         }
         flush();
     }
@@ -751,9 +754,9 @@ public class SweetEditor extends JPanel {
     }
 
     private void applyCompletionItem(CompletionItem item) {
-        CompletionItem.TextEdit textEdit = item.getTextEdit();
-        boolean isSnippet = item.getInsertTextFormat() == CompletionItem.INSERT_TEXT_FORMAT_SNIPPET;
-        String text = item.getInsertText() != null ? item.getInsertText() : item.getLabel();
+        CompletionItem.TextEdit textEdit = item.textEdit;
+        boolean isSnippet = item.insertTextFormat == CompletionItem.INSERT_TEXT_FORMAT_SNIPPET;
+        String text = item.insertText != null ? item.insertText : item.label;
 
         // Determine the range to replace: textEdit takes priority, otherwise fallback to wordRange
         TextRange replaceRange = null;
