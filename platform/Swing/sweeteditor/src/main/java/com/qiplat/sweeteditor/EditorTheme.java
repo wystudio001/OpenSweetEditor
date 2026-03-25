@@ -60,6 +60,8 @@ public class EditorTheme {
     public Color scrollbarTrackColor = argb(0x48FFFFFF);
     /** Scrollbar thumb color. */
     public Color scrollbarThumbColor = argb(0xAA858585);
+    /** Scrollbar thumb active (dragging) color. */
+    public Color scrollbarThumbActiveColor = argb(0xFFBBBBBB);
 
     /** IME composition underline color. */
     public Color compositionUnderlineColor;
@@ -148,6 +150,7 @@ public class EditorTheme {
         t.splitLineColor            = argb(0x3356617A);
         t.scrollbarTrackColor       = argb(0x2AFFFFFF);
         t.scrollbarThumbColor       = argb(0x9A7282A0);
+        t.scrollbarThumbActiveColor = argb(0xFFAABEDD);
         t.compositionUnderlineColor = argb(0xFF7AA2F7);
         t.inlayHintBgColor          = argb(0x223A4A66);
         t.inlayHintTextColor        = argb(0xC0AFC2E0);
@@ -201,6 +204,7 @@ public class EditorTheme {
         t.splitLineColor            = argb(0x1F29426B);
         t.scrollbarTrackColor       = argb(0x1F2A3B55);
         t.scrollbarThumbColor       = argb(0x80446C9C);
+        t.scrollbarThumbActiveColor = argb(0xEE6A9AD0);
         t.compositionUnderlineColor = argb(0xFF2563EB);
         t.inlayHintBgColor          = argb(0x143B82F6);
         t.inlayHintTextColor        = argb(0xB0344A73);

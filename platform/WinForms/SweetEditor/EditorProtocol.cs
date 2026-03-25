@@ -757,6 +757,7 @@ namespace SweetEditor {
 			scrollbar = default;
 			if (!TryReadInt32(data, ref offset, out int visible) ||
 				!TryReadFloat(data, ref offset, out float alpha) ||
+				!TryReadInt32(data, ref offset, out int thumbActive) ||
 				!TryReadScrollbarRect(data, ref offset, out ScrollbarRect track) ||
 				!TryReadScrollbarRect(data, ref offset, out ScrollbarRect thumb)) {
 				return false;
@@ -764,6 +765,7 @@ namespace SweetEditor {
 			scrollbar = new ScrollbarModel {
 				Visible = visible != 0,
 				Alpha = alpha,
+				ThumbActive = thumbActive != 0,
 				Track = track,
 				Thumb = thumb,
 			};

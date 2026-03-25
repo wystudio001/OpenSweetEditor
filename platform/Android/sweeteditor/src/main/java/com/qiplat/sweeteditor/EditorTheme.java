@@ -58,6 +58,8 @@ public class EditorTheme {
     public int scrollbarTrackColor = 0x48FFFFFF;
     /** Scrollbar thumb color (ARGB). */
     public int scrollbarThumbColor = 0xAA858585;
+    /** Scrollbar thumb active (dragging) color (ARGB). */
+    public int scrollbarThumbActiveColor = 0xFFBBBBBB;
 
     /** IME composition underline color (ARGB). */
     public int compositionUnderlineColor;
@@ -155,6 +157,7 @@ public class EditorTheme {
         t.splitLineColor            = 0x3356617A;
         t.scrollbarTrackColor       = 0x2AFFFFFF;
         t.scrollbarThumbColor       = 0x9A7282A0;
+        t.scrollbarThumbActiveColor = 0xFFAABEDD;
         t.compositionUnderlineColor = 0xFF7AA2F7;
         t.inlayHintBgColor          = 0x223A4A66;
         t.inlayHintTextColor        = 0xC0AFC2E0;
@@ -213,6 +216,7 @@ public class EditorTheme {
         t.splitLineColor            = 0x1F29426B;
         t.scrollbarTrackColor       = 0x1F2A3B55;
         t.scrollbarThumbColor       = 0x80446C9C;
+        t.scrollbarThumbActiveColor = 0xEE6A9AD0;
         t.compositionUnderlineColor = 0xFF2563EB;
         t.inlayHintBgColor          = 0x143B82F6;
         t.inlayHintTextColor        = 0xB0344A73;

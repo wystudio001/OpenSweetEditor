@@ -131,6 +131,8 @@ namespace SweetEditor {
 		public Color ScrollbarTrackColor { get; set; } = Color.FromArgb(unchecked((int)0x48FFFFFF));
 		/// <summary>Scrollbar thumb color (ARGB).</summary>
 		public Color ScrollbarThumbColor { get; set; } = Color.FromArgb(unchecked((int)0xAA858585));
+		/// <summary>Scrollbar thumb active (dragging) color (ARGB).</summary>
+public Color ScrollbarThumbActiveColor { get; set; } = Color.FromArgb(unchecked((int)0xFFBBBBBB));
 
 		/// <summary>IME composition underline color (ARGB).</summary>
 		public Color CompositionColor { get; set; }
@@ -215,6 +217,7 @@ namespace SweetEditor {
 			SplitLineColor = Color.FromArgb(unchecked((int)0x3356617A)),
 			ScrollbarTrackColor = Color.FromArgb(unchecked((int)0x2AFFFFFF)),
 			ScrollbarThumbColor = Color.FromArgb(unchecked((int)0x9A7282A0)),
+ScrollbarThumbActiveColor = Color.FromArgb(unchecked((int)0xFFAABEDD)),
 			CompositionColor = Color.FromArgb(unchecked((int)0xFF7AA2F7)),
 			InlayHintBgColor = Color.FromArgb(unchecked((int)0x223A4A66)),
 			InlayHintTextColor = Color.FromArgb(unchecked((int)0xC0AFC2E0)),
@@ -267,6 +270,7 @@ namespace SweetEditor {
 			SplitLineColor = Color.FromArgb(unchecked((int)0x1F29426B)),
 			ScrollbarTrackColor = Color.FromArgb(unchecked((int)0x1F2A3B55)),
 			ScrollbarThumbColor = Color.FromArgb(unchecked((int)0x80446C9C)),
+ScrollbarThumbActiveColor = Color.FromArgb(unchecked((int)0xEE6A9AD0)),
 			CompositionColor = Color.FromArgb(unchecked((int)0xFF2563EB)),
 			InlayHintBgColor = Color.FromArgb(unchecked((int)0x143B82F6)),
 			InlayHintTextColor = Color.FromArgb(unchecked((int)0xB0344A73)),

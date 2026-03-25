@@ -1248,6 +1248,9 @@ namespace SweetEditor {
 		/// <summary>Scrollbar alpha in [0, 1].</summary>
 		[JsonPropertyName("alpha")]
 		public float Alpha { get; set; }
+		/// <summary>Whether the thumb is currently being dragged.</summary>
+		[JsonPropertyName("thumb_active")]
+		public bool ThumbActive { get; set; }
 		/// <summary>Track rectangle.</summary>
 		[JsonPropertyName("track")]
 		public ScrollbarRect Track { get; set; }
