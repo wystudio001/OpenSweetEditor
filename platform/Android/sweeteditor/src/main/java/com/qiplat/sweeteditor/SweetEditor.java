@@ -214,7 +214,9 @@ public class SweetEditor extends View {
         fireGestureEvents(result, screenPoint);
         if (result.type == EditorCore.GestureType.TAP) {
             requestFocus();
-            showSoftKeyboard();
+            if (result.hitTarget == null || result.hitTarget.type == EditorCore.HitTargetType.NONE) {
+                showSoftKeyboard();
+            }
             resetCursorBlink();
         } else if (result.type == EditorCore.GestureType.SCALE) {
             // C++ core already applies scale during gesture handling; only sync platform-side measurer/paints here.
