@@ -375,9 +375,6 @@ final class EditorRenderer {
         drawCursor(canvas, model.cursor, cursorVisible);
         if (drawPerf != null) drawPerf.mark(PerfStepRecorder.STEP_CURSOR);
 
-        drawSelectionHandles(canvas, model.selectionStartHandle, model.selectionEndHandle);
-        if (drawPerf != null) drawPerf.mark(PerfStepRecorder.STEP_HANDLES);
-
         if (model.splitX > 0) {
             canvas.drawRect(0, 0, model.splitX, viewHeight, mBackgroundPaint);
             drawCurrentLineDecoration(canvas, model, 0f, model.splitX);
@@ -388,6 +385,9 @@ final class EditorRenderer {
 
         drawLineNumbers(canvas, model);
         if (drawPerf != null) drawPerf.mark(PerfStepRecorder.STEP_GUTTER);
+
+        drawSelectionHandles(canvas, model.selectionStartHandle, model.selectionEndHandle);
+        if (drawPerf != null) drawPerf.mark(PerfStepRecorder.STEP_HANDLES);
 
         boolean needsTransientRefresh = drawScrollbars(canvas, model);
         if (drawPerf != null) {
@@ -700,7 +700,8 @@ final class EditorRenderer {
 
         if (hasVertical) {
             mScrollbarTrackPaint.setColor(multiplyAlpha(mTheme.scrollbarTrackColor, verticalAlpha));
-            mScrollbarThumbPaint.setColor(multiplyAlpha(mTheme.scrollbarThumbColor, verticalAlpha));
+            int vThumbColor = vertical.thumbActive ? mTheme.scrollbarThumbActiveColor : mTheme.scrollbarThumbColor;
+            mScrollbarThumbPaint.setColor(multiplyAlpha(vThumbColor, verticalAlpha));
             float trackX = vertical.track.origin != null ? vertical.track.origin.x : 0f;
             float trackY = vertical.track.origin != null ? vertical.track.origin.y : 0f;
             float thumbX = vertical.thumb.origin != null ? vertical.thumb.origin.x : 0f;
@@ -713,7 +714,8 @@ final class EditorRenderer {
 
         if (hasHorizontal) {
             mScrollbarTrackPaint.setColor(multiplyAlpha(mTheme.scrollbarTrackColor, horizontalAlpha));
-            mScrollbarThumbPaint.setColor(multiplyAlpha(mTheme.scrollbarThumbColor, horizontalAlpha));
+            int hThumbColor = horizontal.thumbActive ? mTheme.scrollbarThumbActiveColor : mTheme.scrollbarThumbColor;
+            mScrollbarThumbPaint.setColor(multiplyAlpha(hThumbColor, horizontalAlpha));
             float trackX = horizontal.track.origin != null ? horizontal.track.origin.x : 0f;
             float trackY = horizontal.track.origin != null ? horizontal.track.origin.y : 0f;
             float thumbX = horizontal.thumb.origin != null ? horizontal.thumb.origin.x : 0f;

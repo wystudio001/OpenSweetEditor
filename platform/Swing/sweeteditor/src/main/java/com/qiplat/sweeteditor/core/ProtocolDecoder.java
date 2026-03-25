@@ -431,6 +431,7 @@ final class ProtocolDecoder {
         ScrollbarModel model = new ScrollbarModel();
         model.visible = data.getInt() != 0;
         model.alpha = data.getFloat();
+        model.thumbActive = data.getInt() != 0;
         model.track = readScrollbarRect(data);
         model.thumb = readScrollbarRect(data);
         return model;

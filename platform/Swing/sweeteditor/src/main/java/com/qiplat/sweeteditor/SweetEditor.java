@@ -84,7 +84,7 @@ public class SweetEditor extends JPanel {
 
         // Completion manager and popup controller
         completionProviderManager = new CompletionProviderManager(this);
-        completionPopupController = new CompletionPopupController(this);
+        completionPopupController = new CompletionPopupController(this, theme);
         completionProviderManager.setListener(completionPopupController);
         completionPopupController.setConfirmListener(this::applyCompletionItem);
 
@@ -143,6 +143,9 @@ public class SweetEditor extends JPanel {
         for (var entry : theme.textStyles.entrySet()) {
             TextStyle v = entry.getValue();
             editorCore.registerTextStyle(entry.getKey(), v.color, v.backgroundColor, v.fontStyle);
+        }
+        if (completionPopupController != null) {
+            completionPopupController.applyTheme(theme);
         }
         flush();
     }
@@ -340,16 +343,21 @@ public class SweetEditor extends JPanel {
 
     public void setLanguageConfiguration(LanguageConfiguration config) {
         this.languageConfiguration = config;
-        if (config != null && !config.getBrackets().isEmpty()) {
-            int size = config.getBrackets().size();
-            int[] opens = new int[size];
-            int[] closes = new int[size];
-            for (int i = 0; i < size; i++) {
-                LanguageConfiguration.BracketPair pair = config.getBrackets().get(i);
-                opens[i] = pair.open.isEmpty() ? 0 : pair.open.codePointAt(0);
-                closes[i] = pair.close.isEmpty() ? 0 : pair.close.codePointAt(0);
+        if (config != null) {
+            if (!config.getBrackets().isEmpty()) {
+                int size = config.getBrackets().size();
+                int[] opens = new int[size];
+                int[] closes = new int[size];
+                for (int i = 0; i < size; i++) {
+                    LanguageConfiguration.BracketPair pair = config.getBrackets().get(i);
+                    opens[i] = pair.open.isEmpty() ? 0 : pair.open.codePointAt(0);
+                    closes[i] = pair.close.isEmpty() ? 0 : pair.close.codePointAt(0);
+                }
+                editorCore.setBracketPairs(opens, closes);
             }
-            editorCore.setBracketPairs(opens, closes);
+            if (config.getTabSize() != null && config.getTabSize() > 0) {
+                editorCore.setTabSize(config.getTabSize());
+            }
         }
     }
     public LanguageConfiguration getLanguageConfiguration() { return languageConfiguration; }
@@ -751,9 +759,9 @@ public class SweetEditor extends JPanel {
     }
 
     private void applyCompletionItem(CompletionItem item) {
-        CompletionItem.TextEdit textEdit = item.getTextEdit();
-        boolean isSnippet = item.getInsertTextFormat() == CompletionItem.INSERT_TEXT_FORMAT_SNIPPET;
-        String text = item.getInsertText() != null ? item.getInsertText() : item.getLabel();
+        CompletionItem.TextEdit textEdit = item.textEdit;
+        boolean isSnippet = item.insertTextFormat == CompletionItem.INSERT_TEXT_FORMAT_SNIPPET;
+        String text = item.insertText != null ? item.insertText : item.label;
 
         // Determine the range to replace: textEdit takes priority, otherwise fallback to wordRange
         TextRange replaceRange = null;
@@ -914,7 +922,7 @@ public class SweetEditor extends JPanel {
      * updates to make them take effect.
      */
     public void flush() {
-        editorCore.resetMeasurer();
+        editorCore.onFontMetricsChanged();
         renderModel = editorCore.buildRenderModel();
         repaint();
     }

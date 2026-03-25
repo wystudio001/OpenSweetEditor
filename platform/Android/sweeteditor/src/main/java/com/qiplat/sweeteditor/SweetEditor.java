@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Choreographer;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -164,6 +165,23 @@ public class SweetEditor extends View {
         }
     };
 
+    // Fling timer: ticks via Choreographer for VSync-aligned inertial scrolling
+    private boolean mFlingActive = false;
+    private final Choreographer.FrameCallback mFlingFrameCallback = new Choreographer.FrameCallback() {
+        @Override
+        public void doFrame(long frameTimeNanos) {
+            if (!mFlingActive) return;
+            EditorCore.GestureResult result = mEditorCore.tickFling();
+            fireGestureEvents(result, null);
+            flush();
+            if (result.needsFling) {
+                Choreographer.getInstance().postFrameCallback(this);
+            } else {
+                mFlingActive = false;
+            }
+        }
+    };
+
     public SweetEditor(Context context) {
         super(context);
         initView(context);
@@ -210,6 +228,14 @@ public class SweetEditor extends View {
         } else if (!result.needsEdgeScroll && mEdgeScrollActive) {
             mEdgeScrollActive = false;
             mHandler.removeCallbacks(mEdgeScrollTick);
+        }
+        // Start/stop fling timer based on C++ core needs_fling flag
+        if (result.needsFling && !mFlingActive) {
+            mFlingActive = true;
+            Choreographer.getInstance().postFrameCallback(mFlingFrameCallback);
+        } else if (!result.needsFling && mFlingActive) {
+            mFlingActive = false;
+            Choreographer.getInstance().removeFrameCallback(mFlingFrameCallback);
         }
         if (ENABLE_PERF_LOG) {
             float ms = (System.nanoTime() - t0) / 1_000_000f;
@@ -304,6 +330,8 @@ public class SweetEditor extends View {
         super.onDetachedFromWindow();
         mHandler.removeCallbacks(mCursorBlink);
         mHandler.removeCallbacks(mTransientScrollbarRefresh);
+        android.view.Choreographer.getInstance().removeFrameCallback(mFlingFrameCallback);
+        mFlingActive = false;
     }
 
     @Override
@@ -314,6 +342,8 @@ public class SweetEditor extends View {
         } else {
             mHandler.removeCallbacks(mCursorBlink);
             mHandler.removeCallbacks(mTransientScrollbarRefresh);
+            android.view.Choreographer.getInstance().removeFrameCallback(mFlingFrameCallback);
+            mFlingActive = false;
         }
     }
 
@@ -348,18 +378,18 @@ public class SweetEditor extends View {
 
     void syncPlatformScale(float scale) {
         mRenderer.syncPlatformScale(scale);
-        mEditorCore.resetMeasurer();
+        mEditorCore.onFontMetricsChanged();
     }
 
     void applyTypeface(Typeface typeface) {
         mRenderer.applyTypeface(typeface);
-        mEditorCore.resetMeasurer();
+        mEditorCore.onFontMetricsChanged();
         flush();
     }
 
     void applyTextSize(float textSize) {
         mRenderer.applyTextSize(textSize);
-        mEditorCore.resetMeasurer();
+        mEditorCore.onFontMetricsChanged();
         flush();
     }
 
@@ -388,6 +418,10 @@ public class SweetEditor extends View {
 
         if (mInlineSuggestionController != null) {
             mInlineSuggestionController.applyTheme(theme);
+        }
+
+        if (mCompletionPopupController != null) {
+            mCompletionPopupController.applyTheme(theme);
         }
 
         flush();
@@ -1187,16 +1221,21 @@ public class SweetEditor extends View {
      */
     public void setLanguageConfiguration(@Nullable LanguageConfiguration config) {
         mLanguageConfiguration = config;
-        if (config != null && !config.getBrackets().isEmpty()) {
-            int size = config.getBrackets().size();
-            int[] opens = new int[size];
-            int[] closes = new int[size];
-            for (int i = 0; i < size; i++) {
-                LanguageConfiguration.BracketPair pair = config.getBrackets().get(i);
-                opens[i] = pair.open.isEmpty() ? 0 : pair.open.codePointAt(0);
-                closes[i] = pair.close.isEmpty() ? 0 : pair.close.codePointAt(0);
+        if (config != null) {
+            if (!config.getBrackets().isEmpty()) {
+                int size = config.getBrackets().size();
+                int[] opens = new int[size];
+                int[] closes = new int[size];
+                for (int i = 0; i < size; i++) {
+                    LanguageConfiguration.BracketPair pair = config.getBrackets().get(i);
+                    opens[i] = pair.open.isEmpty() ? 0 : pair.open.codePointAt(0);
+                    closes[i] = pair.close.isEmpty() ? 0 : pair.close.codePointAt(0);
+                }
+                mEditorCore.setBracketPairs(opens, closes);
             }
-            mEditorCore.setBracketPairs(opens, closes);
+            if (config.getTabSize() > 0) {
+                mEditorCore.setTabSize(config.getTabSize());
+            }
         }
     }
 
@@ -1458,9 +1497,9 @@ public class SweetEditor extends View {
      * Prefers textEdit's specified replacement range, otherwise falls back to wordRange to delete typed prefix.
      */
     private void applyCompletionItem(@NonNull CompletionItem item) {
-        CompletionItem.TextEdit textEdit = item.getTextEdit();
-        boolean isSnippet = item.getInsertTextFormat() == CompletionItem.INSERT_TEXT_FORMAT_SNIPPET;
-        String text = item.getInsertText() != null ? item.getInsertText() : item.getLabel();
+        CompletionItem.TextEdit textEdit = item.textEdit;
+        boolean isSnippet = item.insertTextFormat == CompletionItem.INSERT_TEXT_FORMAT_SNIPPET;
+        String text = item.insertText != null ? item.insertText : item.label;
 
         // Determine the range to replace: textEdit takes priority, otherwise fallback to wordRange
         TextRange replaceRange = null;
@@ -1700,9 +1739,9 @@ public class SweetEditor extends View {
 
         mRenderer.setHandleConfig(EditorRenderer.computeHandleHitConfig(density));
 
-        float scrollbarThicknessPx = 12.0f * density;
-        float scrollbarMinThumbPx = 48.0f * density;
-        float scrollbarThumbHitPaddingPx = 16.0f * density;
+        float scrollbarThicknessPx = 8.0f * density;
+        float scrollbarMinThumbPx = 40.0f * density;
+        float scrollbarThumbHitPaddingPx = 20.0f * density;
         mRenderer.setScrollbarConfig(new ScrollbarConfig(
                 scrollbarThicknessPx,
                 scrollbarMinThumbPx,
@@ -1724,7 +1763,7 @@ public class SweetEditor extends View {
         mDecorationProviderManager = new DecorationProviderManager(this);
 
         mCompletionProviderManager = new CompletionProviderManager(this);
-        mCompletionPopupController = new CompletionPopupController(context, this);
+        mCompletionPopupController = new CompletionPopupController(context, this, mTheme);
         mCompletionProviderManager.setListener(mCompletionPopupController);
         mCompletionPopupController.setConfirmListener(this::applyCompletionItem);
 
