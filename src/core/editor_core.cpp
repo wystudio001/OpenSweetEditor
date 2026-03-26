@@ -783,14 +783,11 @@ m_fling_ = makeUPtr<FlingAnimator>(tc);
     // Fling velocity is in screen space (finger direction), scroll is inverted
     m_view_state_.scroll_x -= dx;
     m_view_state_.scroll_y -= dy;
+    // Snap to integer pixels every frame to prevent sub-pixel jitter during slow fling
+    m_view_state_.scroll_x = std::round(m_view_state_.scroll_x);
+    m_view_state_.scroll_y = std::round(m_view_state_.scroll_y);
     normalizeScrollState();
     markScrollbarInteraction();
-
-    if (!still_active) {
-      m_view_state_.scroll_x = std::round(m_view_state_.scroll_x);
-      m_view_state_.scroll_y = std::round(m_view_state_.scroll_y);
-      normalizeScrollState();
-    }
 
     fillGestureResult(result);
     result.needs_fling = still_active;

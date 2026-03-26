@@ -20,11 +20,11 @@ namespace NS_SWEETEDITOR {
     /// Time threshold for long press
     int64_t long_press_ms {500};
     /// Fling friction coefficient (higher = faster deceleration)
-    float fling_friction {3.5f};
+    float fling_friction {2.0f};
     /// Minimum fling velocity threshold in pixels/second
-    float fling_min_velocity {50.0f};
+    float fling_min_velocity {30.0f};
     /// Maximum fling velocity cap in pixels/second
-    float fling_max_velocity {8000.0f};
+    float fling_max_velocity {12000.0f};
   };
 
   /// Fling (inertial scroll) animator driven by exponential velocity decay.
@@ -62,7 +62,7 @@ namespace NS_SWEETEDITOR {
     float m_elapsed_ms_ {0};
     int64_t m_last_tick_time_ {0};
 
-    static constexpr int kMaxSamples = 5;
+    static constexpr int kMaxSamples = 8;
     struct Sample {
       PointF point;
       int64_t timestamp_ms {0};
